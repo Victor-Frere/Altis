@@ -5,6 +5,7 @@ import { Header, type AppView } from "./components/Header";
 import { AuthModal } from "./features/auth/AuthModal";
 import { useAuth } from "./features/auth/useAuth";
 import { ConsentToggle } from "./features/plan/ConsentToggle";
+import { TrainingPlan } from "./features/plan/TrainingPlan";
 import {
   AthleteSelector,
   type TrainerAthlete,
@@ -66,12 +67,12 @@ function SupabaseApp({ client }: { client: SupabaseClient }) {
               client={client}
               mode="athlete"
             />
-            <section
-              aria-label="Mon plan d’entraînement"
-              className="rounded-xl border border-gray-200 bg-white p-6"
-            >
-              <p>Affichage du plan d'entraînement ici</p>
-            </section>
+            <TrainingPlan
+              athleteId={auth.profile.id}
+              client={client}
+              isAthleteOwner
+              viewerId={auth.profile.id}
+            />
           </>
         ) : (
           <>
@@ -81,20 +82,13 @@ function SupabaseApp({ client }: { client: SupabaseClient }) {
               selectedAthleteId={selectedAthlete?.athlete_id ?? null}
             />
             {selectedAthlete && (
-              <section
-                aria-label={`Plan d’entraînement de ${selectedAthlete.username}`}
-                className="space-y-4 rounded-xl border border-gray-200 bg-white p-6"
-              >
-                <ConsentToggle
-                  editConsent={selectedAthlete.edit_consent}
-                  mode="trainer"
-                >
-                  <p className="text-sm text-green-800">
-                    Le consentement autorise la modification du plan.
-                  </p>
-                </ConsentToggle>
-                <p>Affichage du plan de l'athlète sélectionné ici</p>
-              </section>
+              <TrainingPlan
+                athleteId={selectedAthlete.athlete_id}
+                athleteName={selectedAthlete.username}
+                client={client}
+                isAthleteOwner={false}
+                viewerId={auth.profile.id}
+              />
             )}
           </>
         )}
