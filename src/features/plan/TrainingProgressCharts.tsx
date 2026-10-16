@@ -16,6 +16,7 @@ import {
   getWeekVolume,
   type TrainingWeek,
 } from "./trainingPlanTypes";
+import { parseSeuilTime } from "./workoutGenerator";
 
 interface TrainingProgressChartsProps {
   weeks: TrainingWeek[];
@@ -26,8 +27,7 @@ export function TrainingProgressCharts({ weeks }: TrainingProgressChartsProps) {
     week: `S${week.weekNumber}`,
     volumeKm: Number(getWeekVolume(week).toFixed(1)),
     thresholdMinutes: week.sessions.reduce(
-      (total, session) =>
-        total + (session.type === "Seuil" ? session.thresholdMinutes : 0),
+      (total, session) => total + parseSeuilTime(session.type, session.details),
       0,
     ),
     hillDistanceKm: Number(

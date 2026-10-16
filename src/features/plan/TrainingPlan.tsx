@@ -2,21 +2,24 @@ import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   ChevronDown,
-  ChevronUp,
   Eye,
   Lock,
   LockOpen,
   Plus,
+  RotateCcw,
   Settings,
 } from "lucide-react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TrainingProgressCharts } from "./TrainingProgressCharts";
+import { WorkoutAssistant } from "./WorkoutAssistant";
+import { parseSeuilTime } from "./workoutGenerator";
 import { useTrainingPlan } from "./useTrainingPlan";
 import {
   createTrainingWeek,
   addDaysToDateString,
   formatTrainingWeekRange,
   formatTrainingDayDate,
+  formatShortTrainingDate,
   getMondayDateString,
   getSessionVolume,
   getTotalVolume,
@@ -54,6 +57,46 @@ function updateSession(
         }
       : week,
   );
+}
+
+function getModifiedWeeks(
+  savedWeeks: TrainingWeek[],
+  draftWeeks: TrainingWeek[],
+): TrainingWeek[] {
+  const savedByNumber = new Map(
+    savedWeeks.map((week): [number, TrainingWeek] => [week.weekNumber, week]),
+  );
+  const draftByNumber = new Map(
+    draftWeeks.map((week): [number, TrainingWeek] => [week.weekNumber, week]),
+  );
+  const weekNumbers = new Set([...savedByNumber.keys(), ...draftByNumber.keys()]);
+
+  return [...weekNumbers]
+    .filter((weekNumber) => {
+      const savedWeek = savedByNumber.get(weekNumber);
+      const draftWeek = draftByNumber.get(weekNumber);
+      return (
+        !savedWeek ||
+        !draftWeek ||
+        JSON.stringify(savedWeek) !== JSON.stringify(draftWeek)
+      );
+    })
+    .map((weekNumber) => draftByNumber.get(weekNumber) ?? savedByNumber.get(weekNumber))
+    .filter((week): week is TrainingWeek => week !== undefined)
+    .sort(
+      (left, right) =>
+        left.date.localeCompare(right.date) || left.weekNumber - right.weekNumber,
+    );
+}
+
+function formatModifiedWeekSummary(weeks: TrainingWeek[]): string {
+  if (weeks.length === 1) {
+    return `Modifications non enregistrées : ${formatTrainingWeekRange(weeks[0].date)}`;
+  }
+
+  const firstDate = weeks[0].date;
+  const lastDate = weeks[weeks.length - 1].date;
+  return `Modifications non enregistrées sur ${weeks.length} semaines (Du ${formatShortTrainingDate(firstDate, 0)} au ${formatShortTrainingDate(lastDate, 6)})`;
 }
 
 function PlanViewMode({
@@ -187,7 +230,9 @@ function PlanViewMode({
                 {selectedDay.type === "Seuil" && (
                   <div>
                     <dt className="text-gray-500">Temps au seuil</dt>
-                    <dd className="font-medium">{selectedDay.thresholdMinutes} min</dd>
+                    <dd className="font-medium">
+                      {parseSeuilTime(selectedDay.type, selectedDay.details)} min
+                    </dd>
                   </div>
                 )}
               </dl>
@@ -212,14 +257,18 @@ function PlanEditMode({
   weeks,
   onWeeksChange,
   isSaving,
+  modifiedWeeks,
   onAddWeek,
+  onCancel,
   onRemoveWeek,
   onSave,
 }: {
   weeks: TrainingWeek[];
   onWeeksChange: (update: (current: TrainingWeek[]) => TrainingWeek[]) => void;
   isSaving: boolean;
+  modifiedWeeks: TrainingWeek[];
   onAddWeek: () => void;
+  onCancel: () => void;
   onRemoveWeek: (weekIndex: number) => void;
   onSave: () => void;
 }) {
@@ -264,30 +313,36 @@ function PlanEditMode({
                 key={`${week.weekNumber}-${weekIndex}`}
               >
                 <div className="flex items-center gap-2 bg-gray-50 px-4 py-3">
-                  <button
-                    aria-controls={panelId}
-                    aria-expanded={isExpanded}
-                    className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left hover:text-blue-700"
-                    onClick={() => toggleWeek(week.weekNumber)}
-                    type="button"
-                  >
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
                     <span className="font-semibold">
                       {formatTrainingWeekRange(week.date)}
                     </span>
-                    <span className="flex items-center gap-3">
-                      <span className="text-xs text-gray-500">
-                        {formatTrainingDayDate(week.date, 0)}
+                    <button
+                      aria-controls={panelId}
+                      aria-expanded={isExpanded}
+                      aria-label={`${isExpanded ? "Replier" : "Déplier"} la semaine ${week.weekNumber}`}
+                      className="flex cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-blue-50 hover:text-blue-600"
+                      onClick={() => toggleWeek(week.weekNumber)}
+                      type="button"
+                    >
+                      <ChevronDown
+                        aria-hidden="true"
+                        className={`transform transition-transform duration-200 ${
+                          isExpanded ? "rotate-180" : ""
+                        }`}
+                        size={18}
+                      />
+                    </button>
+                    <span className="flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">
+                      <span>
+                        Volume total : {getWeekVolume(week).toFixed(1)} km
                       </span>
-                      <span className="text-sm text-gray-600">
-                        {getWeekVolume(week).toFixed(1)} km
+                      <span>
+                        Sortie la plus longue :{" "}
+                        {Math.max(0, ...week.sessions.map(getSessionVolume)).toFixed(1)} km
                       </span>
-                      {isExpanded ? (
-                        <ChevronUp aria-hidden="true" size={18} />
-                      ) : (
-                        <ChevronDown aria-hidden="true" size={18} />
-                      )}
                     </span>
-                  </button>
+                  </div>
                   <label className="flex items-center gap-2 text-xs text-gray-600">
                     Lundi
                     <input
@@ -333,9 +388,6 @@ function PlanEditMode({
                             Volume (km)
                           </th>
                           <th className="px-2 py-3 font-medium" scope="col">
-                            Seuil (min)
-                          </th>
-                          <th className="px-2 py-3 font-medium" scope="col">
                             Détails
                           </th>
                         </tr>
@@ -362,8 +414,6 @@ function PlanEditMode({
                                         ...item,
                                         type,
                                         distanceKm: type === "Off" ? 0 : item.distanceKm,
-                                        thresholdMinutes:
-                                          type === "Seuil" ? item.thresholdMinutes : 0,
                                       }),
                                     ),
                                   );
@@ -403,53 +453,43 @@ function PlanEditMode({
                               />
                             </td>
                             <td className="px-2 py-2">
-                              <input
-                                aria-label={`${session.day}, temps au seuil en minutes`}
-                                className="w-24 rounded-md border border-gray-300 px-2 py-2 disabled:bg-gray-100"
-                                disabled={isSaving || session.type !== "Seuil"}
-                                max="600"
-                                min="0"
-                                onChange={(event) => {
-                                  const thresholdMinutes = Number(event.target.value);
-                                  if (
-                                    Number.isFinite(thresholdMinutes) &&
-                                    thresholdMinutes >= 0
-                                  ) {
+                              <div className="flex min-w-[18rem] items-center gap-2">
+                                <input
+                                  aria-label={`${session.day}, détails`}
+                                  className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-2 disabled:bg-gray-100"
+                                  disabled={isSaving}
+                                  maxLength={300}
+                                  onChange={(event) => {
+                                    const details = event.target.value;
                                     onWeeksChange((current) =>
                                       updateSession(
                                         current,
                                         weekIndex,
                                         sessionIndex,
-                                        (item) => ({ ...item, thresholdMinutes }),
+                                        (item) => ({ ...item, details }),
                                       ),
                                     );
-                                  }
-                                }}
-                                step="1"
-                                type="number"
-                                value={session.thresholdMinutes}
-                              />
-                            </td>
-                            <td className="px-2 py-2">
-                              <input
-                                aria-label={`${session.day}, détails`}
-                                className="w-full min-w-48 rounded-md border border-gray-300 px-2 py-2 disabled:bg-gray-100"
-                                disabled={isSaving}
-                                maxLength={300}
-                                onChange={(event) => {
-                                  const details = event.target.value;
-                                  onWeeksChange((current) =>
-                                    updateSession(
-                                      current,
-                                      weekIndex,
-                                      sessionIndex,
-                                      (item) => ({ ...item, details }),
-                                    ),
-                                  );
-                                }}
-                                placeholder="Allure, répétitions, sensations…"
-                                value={session.details}
-                              />
+                                  }}
+                                  placeholder="Allure, répétitions, sensations…"
+                                  value={session.details}
+                                />
+                                {["VMA", "Seuil", "Côtes"].includes(session.type) && (
+                                  <WorkoutAssistant
+                                    day={session.day}
+                                    initialVolumeKm={session.distanceKm}
+                                    onApply={(details, distanceKm) => {
+                                      onWeeksChange((current) =>
+                                        updateSession(
+                                          current,
+                                          weekIndex,
+                                          sessionIndex,
+                                          (item) => ({ ...item, details, distanceKm }),
+                                        ),
+                                      );
+                                    }}
+                                  />
+                                )}
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -471,16 +511,33 @@ function PlanEditMode({
           Ajouter une semaine
         </button>
       </div>
-      <div className="fixed bottom-0 left-0 z-50 flex w-full justify-end border-t border-slate-200 bg-white/90 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] backdrop-blur-md md:px-8">
-        <button
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={isSaving}
-          onClick={onSave}
-          type="button"
-        >
-          {isSaving ? "Enregistrement…" : "Enregistrer"}
-        </button>
-      </div>
+      {modifiedWeeks.length > 0 && (
+        <div className="animate-slide-up fixed bottom-0 left-0 z-50 flex w-full items-center justify-between gap-4 border-t border-slate-200 bg-white/90 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] backdrop-blur-md md:px-8">
+          <p aria-live="polite" className="min-w-0 text-sm font-medium text-slate-700" role="status">
+            {formatModifiedWeekSummary(modifiedWeeks)}
+          </p>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              aria-label="Annuler les modifications"
+              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-200 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={isSaving}
+              onClick={onCancel}
+              type="button"
+            >
+              <RotateCcw aria-hidden="true" size={16} />
+              Annuler
+            </button>
+            <button
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={isSaving}
+              onClick={onSave}
+              type="button"
+            >
+              {isSaving ? "Enregistrement…" : "Enregistrer"}
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -495,10 +552,12 @@ export function TrainingPlan({
   const plan = useTrainingPlan({ client, athleteId, viewerId, isAthleteOwner });
   const [mode, setMode] = useState<PlanMode>("view");
   const [draftWeeks, setDraftWeeks] = useState<TrainingWeek[]>([]);
+  const [savedWeeks, setSavedWeeks] = useState<TrainingWeek[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setDraftWeeks(plan.weeks);
+    setSavedWeeks(plan.weeks);
   }, [plan.weeks]);
 
   useEffect(() => {
@@ -512,9 +571,9 @@ export function TrainingPlan({
     }
   }, [plan.isEditable]);
 
-  const isDirty = useMemo(
-    () => JSON.stringify(draftWeeks) !== JSON.stringify(plan.weeks),
-    [draftWeeks, plan.weeks],
+  const modifiedWeeks = useMemo(
+    () => getModifiedWeeks(savedWeeks, draftWeeks),
+    [savedWeeks, draftWeeks],
   );
   const canEnterEdit = plan.isEditable && plan.record !== null;
 
@@ -545,8 +604,22 @@ export function TrainingPlan({
     if (!canEnterEdit) {
       return;
     }
-    const saved = await plan.saveWeeks(draftWeeks);
+    const weeksToSave = draftWeeks;
+    const saved = await plan.saveWeeks(weeksToSave);
+    if (saved) {
+      setSavedWeeks(weeksToSave);
+    }
     setSuccessMessage(saved ? "Plan enregistré." : null);
+  };
+
+  const handleCancel = () => {
+    setDraftWeeks(
+      savedWeeks.map((week) => ({
+        ...week,
+        sessions: week.sessions.map((session) => ({ ...session })),
+      })),
+    );
+    setSuccessMessage(null);
   };
 
   if (plan.isLoading) {
@@ -666,7 +739,9 @@ export function TrainingPlan({
         ) : canEnterEdit ? (
           <PlanEditMode
             isSaving={plan.isSaving}
+            modifiedWeeks={modifiedWeeks}
             onAddWeek={addWeek}
+            onCancel={handleCancel}
             onRemoveWeek={removeWeek}
             onSave={() => void handleSave()}
             onWeeksChange={(update) => {
@@ -679,11 +754,6 @@ export function TrainingPlan({
           <PlanViewMode weeks={plan.weeks} />
         )}
 
-        {mode === "edit" && isDirty && (
-          <p aria-live="polite" className="text-xs text-amber-800" role="status">
-            Modifications non enregistrées.
-          </p>
-        )}
       </section>
     </div>
   );

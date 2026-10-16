@@ -24,7 +24,6 @@ export interface TrainingSession {
   day: TrainingDay;
   type: TrainingType;
   distanceKm: number;
-  thresholdMinutes: number;
   details: string;
 }
 
@@ -119,7 +118,6 @@ export function createTrainingWeek(
       day,
       type: "Off",
       distanceKm: 0,
-      thresholdMinutes: 0,
       details: "",
     })),
   };
@@ -172,10 +170,6 @@ export function parseTrainingWeeks(value: unknown): TrainingWeek[] {
         typeof session.distanceKm !== "number" ||
         !Number.isFinite(session.distanceKm) ||
         session.distanceKm < 0 ||
-        !("thresholdMinutes" in session) ||
-        typeof session.thresholdMinutes !== "number" ||
-        !Number.isFinite(session.thresholdMinutes) ||
-        session.thresholdMinutes < 0 ||
         !("details" in session) ||
         typeof session.details !== "string"
       ) {
@@ -188,7 +182,6 @@ export function parseTrainingWeeks(value: unknown): TrainingWeek[] {
         day: session.day as TrainingDay,
         type: session.type as TrainingType,
         distanceKm: session.distanceKm,
-        thresholdMinutes: session.thresholdMinutes,
         details: session.details,
       };
     });
