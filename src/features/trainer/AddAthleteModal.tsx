@@ -19,7 +19,9 @@ function isTrainerAthlete(value: unknown): value is TrainerAthlete {
     "username" in value &&
     typeof value.username === "string" &&
     "edit_consent" in value &&
-    typeof value.edit_consent === "boolean"
+    typeof value.edit_consent === "boolean" &&
+    "status" in value &&
+    (value.status === "pending" || value.status === "accepted")
   );
 }
 
@@ -97,13 +99,13 @@ export function AddAthleteModal({
       <section
         aria-labelledby="add-athlete-title"
         aria-modal="true"
-        className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+        className="altis-card relative w-full max-w-md p-6 shadow-xl"
         role="dialog"
       >
         <h2 className="text-xl font-semibold" id="add-athlete-title">
           Ajouter un athlète
         </h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="altis-muted-text mt-1 text-sm">
           Saisissez l’identifiant exact du compte à rattacher.
         </p>
 
@@ -114,7 +116,7 @@ export function AddAthleteModal({
             </label>
             <input
               autoComplete="off"
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
+              className="w-full rounded-md px-3 py-2"
               id="athlete-username"
               maxLength={32}
               minLength={3}
@@ -126,14 +128,14 @@ export function AddAthleteModal({
           </div>
 
           {error && (
-            <p aria-live="polite" className="text-sm text-red-700" role="alert">
+            <p aria-live="polite" className="altis-error-text text-sm" role="alert">
               {error}
             </p>
           )}
 
           <div className="flex justify-end gap-2">
             <button
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="altis-secondary-button rounded-md px-3 py-2 text-sm"
               disabled={isSubmitting}
               onClick={onClose}
               type="button"
@@ -141,7 +143,7 @@ export function AddAthleteModal({
               Annuler
             </button>
             <button
-              className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="altis-primary-button rounded-md px-3 py-2 text-sm disabled:opacity-60"
               disabled={isSubmitting}
               type="submit"
             >

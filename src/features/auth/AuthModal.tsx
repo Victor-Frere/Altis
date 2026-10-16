@@ -41,13 +41,13 @@ export function AuthModal({ auth, onClose }: AuthModalProps) {
       <section
         aria-labelledby="auth-modal-title"
         aria-modal="true"
-        className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+        className="altis-card relative w-full max-w-md p-6 shadow-xl"
         role="dialog"
       >
         <h2 className="text-xl font-semibold" id="auth-modal-title">
           {isSignUp ? "Créer un compte" : "Connexion"}
         </h2>
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="altis-muted-text mt-1 text-sm">
           {isSignUp
             ? "Inscrivez-vous avec un identifiant et un mot de passe."
             : "Connectez-vous avec votre identifiant et votre mot de passe."}
@@ -60,7 +60,7 @@ export function AuthModal({ auth, onClose }: AuthModalProps) {
             </label>
             <input
               autoComplete="username"
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
+              className="w-full rounded-md px-3 py-2"
               id="auth-username"
               maxLength={32}
               minLength={3}
@@ -77,7 +77,7 @@ export function AuthModal({ auth, onClose }: AuthModalProps) {
             </label>
             <input
               autoComplete={isSignUp ? "new-password" : "current-password"}
-              className="w-full rounded-md border border-gray-300 px-3 py-2"
+              className="w-full rounded-md px-3 py-2"
               id="auth-password"
               onChange={(event) => setPassword(event.target.value)}
               required
@@ -87,13 +87,13 @@ export function AuthModal({ auth, onClose }: AuthModalProps) {
           </div>
 
           {auth.error && (
-            <p aria-live="polite" className="text-sm text-red-700" role="alert">
+            <p aria-live="polite" className="altis-error-text text-sm" role="alert">
               {auth.error}
             </p>
           )}
 
           <button
-            className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="altis-primary-button w-full rounded-md px-4 py-2 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={auth.isSubmitting}
             type="submit"
           >
@@ -105,10 +105,10 @@ export function AuthModal({ auth, onClose }: AuthModalProps) {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="altis-muted-text mt-4 text-center text-sm">
           {isSignUp ? "Déjà inscrit ?" : "Pas encore de compte ?"}{" "}
           <button
-            className="font-medium text-blue-700 underline"
+            className="font-medium text-altis-navy underline hover:text-slate-600 dark:text-altis-gold dark:hover:text-altis-gold-hover"
             disabled={auth.isSubmitting}
             onClick={switchMode}
             type="button"
@@ -120,7 +120,7 @@ export function AuthModal({ auth, onClose }: AuthModalProps) {
         {onClose && (
           <button
             aria-label="Fermer"
-            className="absolute right-4 top-4 rounded p-2 text-gray-600 hover:bg-gray-100"
+            className="absolute right-4 top-4 rounded p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-altis-marble"
             onClick={onClose}
             type="button"
           >

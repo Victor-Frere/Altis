@@ -2,6 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --altis-chart-grid: #cbd5e1;
+  --altis-chart-text: #475569;
+  --altis-chart-surface: #ffffff;
+  --altis-chart-border: #e2e8f0;
+  --altis-chart-label: #0f172a;
+}
+
+.dark {
+  --altis-chart-grid: #475569;
+  --altis-chart-text: #94a3b8;
+  --altis-chart-surface: #1e293b;
+  --altis-chart-border: rgba(71, 85, 105, 0.5);
+  --altis-chart-label: #f8fafc;
+}
+
+@layer base {
+  body {
+    @apply bg-altis-marble text-slate-800 transition-colors duration-200 dark:bg-altis-navy dark:text-altis-marble;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    @apply border border-slate-300 bg-slate-50 text-slate-900 placeholder:text-slate-500 focus:border-altis-gold focus:outline-none focus:ring-1 focus:ring-altis-gold dark:border-slate-700 dark:bg-slate-900/60 dark:text-altis-marble dark:placeholder:text-slate-400;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply accent-altis-gold;
+  }
+}
+
+@layer components {
+  .altis-card {
+    @apply rounded-2xl border border-slate-200 bg-altis-card-light shadow-sm dark:border-slate-800 dark:bg-altis-card-dark;
+  }
+
+  .altis-panel {
+    @apply border border-slate-200 bg-slate-50 dark:border-slate-700/50 dark:bg-slate-900/40;
+  }
+
+  .altis-muted-text {
+    @apply text-slate-600 dark:text-slate-400;
+  }
+
+  .altis-primary-button {
+    @apply bg-altis-navy font-bold text-white shadow-md transition-all hover:bg-slate-800 dark:bg-altis-gold dark:text-altis-navy dark:hover:bg-altis-gold-hover;
+  }
+
+  .altis-secondary-button {
+    @apply border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-altis-marble dark:hover:bg-slate-800;
+  }
+
+  .altis-selected {
+    @apply bg-altis-navy text-white dark:bg-altis-gold dark:text-altis-navy;
+  }
+
+  .altis-error-text {
+    @apply text-red-700 dark:text-red-300;
+  }
+
+  .altis-error-panel {
+    @apply rounded-md border border-red-300 bg-red-50 p-3 text-red-800 dark:border-red-500/30 dark:bg-red-950/50 dark:text-red-200;
+  }
+
+  .altis-success-panel {
+    @apply border border-green-300 bg-green-50 text-green-800 dark:border-green-500/30 dark:bg-green-950/40 dark:text-green-200;
+  }
+
+  .altis-success-text {
+    @apply text-green-700 dark:text-green-300;
+  }
+
+  .altis-warning-panel {
+    @apply rounded-md border border-amber-300 bg-amber-50 p-3 text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/40 dark:text-amber-200;
+  }
+}
+
 @keyframes slide-up {
   from {
     opacity: 0;

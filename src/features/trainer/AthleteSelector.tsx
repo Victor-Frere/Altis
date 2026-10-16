@@ -6,6 +6,7 @@ export interface TrainerAthlete {
   athlete_id: string;
   username: string;
   edit_consent: boolean;
+  status: "pending" | "accepted";
 }
 
 interface AthleteSelectorProps {
@@ -25,7 +26,9 @@ function isTrainerAthlete(value: unknown): value is TrainerAthlete {
     "username" in value &&
     typeof value.username === "string" &&
     "edit_consent" in value &&
-    typeof value.edit_consent === "boolean"
+    typeof value.edit_consent === "boolean" &&
+    "status" in value &&
+    (value.status === "pending" || value.status === "accepted")
   );
 }
 
@@ -38,6 +41,7 @@ export function AthleteSelector({
   const [isLoading, setIsLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const loadAthletes = useCallback(async () => {
     setIsLoading(true);
@@ -70,6 +74,12 @@ export function AthleteSelector({
   }, [loadAthletes]);
 
   const handleAthleteAdded = (athlete: TrainerAthlete) => {
+    if (athlete.status === "pending") {
+      setNotice(`Demande envoyée à @${athlete.username} ; en attente d’acceptation.`);
+      setIsAddModalOpen(false);
+      return;
+    }
+
     setAthletes((current) => {
       const existing = current.find((item) => item.athlete_id === athlete.athlete_id);
       if (existing) {
@@ -95,7 +105,7 @@ export function AthleteSelector({
             Athlète
           </label>
           <select
-            className="w-full rounded-md border border-gray-300 px-3 py-2"
+            className="w-full rounded-md px-3 py-2"
             disabled={isLoading}
             id="athlete-selector"
             onChange={(event) => {
@@ -116,7 +126,7 @@ export function AthleteSelector({
           </select>
         </div>
         <button
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-50"
+          className="altis-primary-button rounded-md px-3 py-2 text-sm"
           onClick={() => setIsAddModalOpen(true)}
           type="button"
         >
@@ -125,8 +135,13 @@ export function AthleteSelector({
       </div>
 
       {error && (
-        <p aria-live="polite" className="text-sm text-red-700" role="alert">
+        <p aria-live="polite" className="altis-error-text text-sm" role="alert">
           {error}
+        </p>
+      )}
+      {notice && (
+        <p aria-live="polite" className="altis-success-text text-sm" role="status">
+          {notice}
         </p>
       )}
 
