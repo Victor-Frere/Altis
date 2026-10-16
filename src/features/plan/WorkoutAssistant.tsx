@@ -57,7 +57,7 @@ export function WorkoutAssistant({
       <button
         aria-expanded={isOpen}
         aria-label={`Ouvrir l’assistant de séance pour ${day}`}
-        className="inline-flex shrink-0 items-center gap-1 rounded-md border border-blue-200 px-2 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+        className="altis-secondary-button inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-2 text-xs font-semibold"
         onClick={() => {
           setIsOpen((open) => !open);
         }}
@@ -68,33 +68,33 @@ export function WorkoutAssistant({
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div
             aria-labelledby={`workout-assistant-title-${day}`}
             aria-modal="true"
-            className="max-h-[90vh] w-full max-w-md space-y-3 overflow-y-auto rounded-xl border border-slate-200 bg-white p-4 text-left shadow-xl"
+            className="altis-card max-h-[90vh] w-full max-w-md space-y-3 overflow-y-auto p-4 text-left shadow-xl"
             role="dialog"
           >
             <div className="flex items-center justify-between gap-3">
               <h4
-                className="font-semibold text-slate-900"
+                className="font-semibold text-slate-900 dark:text-altis-marble"
                 id={`workout-assistant-title-${day}`}
               >
                 Générer la séance — {day}
               </h4>
               <button
                 aria-label="Fermer l’assistant"
-                className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-altis-marble"
                 onClick={() => setIsOpen(false)}
                 type="button"
               >
                 <X aria-hidden="true" size={18} />
               </button>
             </div>
-            <label className="block space-y-1 text-xs font-medium text-slate-700">
+            <label className="altis-muted-text block space-y-1 text-xs font-medium">
               Volume total visé (km)
               <input
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="w-full rounded-md px-2 py-1.5 text-sm"
                 min="0.1"
                 onChange={(event) => setTotalVolume(event.target.value)}
                 step="0.1"
@@ -103,10 +103,10 @@ export function WorkoutAssistant({
               />
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <label className="space-y-1 text-xs font-medium text-slate-700">
+              <label className="altis-muted-text space-y-1 text-xs font-medium">
                 Répétitions
                 <input
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-md px-2 py-1.5 text-sm"
                   min="1"
                   onChange={(event) => setRepetitions(event.target.value)}
                   step="1"
@@ -114,10 +114,10 @@ export function WorkoutAssistant({
                   value={repetitions}
                 />
               </label>
-              <label className="space-y-1 text-xs font-medium text-slate-700">
+              <label className="altis-muted-text space-y-1 text-xs font-medium">
                 Type d’intervalle
                 <select
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-md px-2 py-1.5 text-sm"
                   onChange={(event) => {
                     const unit = event.target.value as WorkoutIntervalUnit;
                     setIntervalUnit(unit);
@@ -130,10 +130,10 @@ export function WorkoutAssistant({
                 </select>
               </label>
             </div>
-            <label className="block space-y-1 text-xs font-medium text-slate-700">
+            <label className="altis-muted-text block space-y-1 text-xs font-medium">
               Valeur de l’intervalle ({intervalUnit === "meters" ? "mètres" : "minutes"})
               <input
-                className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                className="w-full rounded-md px-2 py-1.5 text-sm"
                 min={intervalUnit === "meters" ? "1" : "0.1"}
                 onChange={(event) => setIntervalValue(event.target.value)}
                 step={intervalUnit === "meters" ? "1" : "0.1"}
@@ -142,19 +142,19 @@ export function WorkoutAssistant({
               />
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <label className="space-y-1 text-xs font-medium text-slate-700">
+              <label className="altis-muted-text space-y-1 text-xs font-medium">
                 Allure cible (min/km)
                 <input
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-md px-2 py-1.5 text-sm"
                   onChange={(event) => setTargetPace(event.target.value)}
                   placeholder="3:45"
                   value={targetPace}
                 />
               </label>
-              <label className="space-y-1 text-xs font-medium text-slate-700">
+              <label className="altis-muted-text space-y-1 text-xs font-medium">
                 Récupération (min:sec)
                 <input
-                  className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+                  className="w-full rounded-md px-2 py-1.5 text-sm"
                   onChange={(event) => setRecovery(event.target.value)}
                   placeholder="1:30"
                   value={recovery}
@@ -163,24 +163,24 @@ export function WorkoutAssistant({
             </div>
 
             {validationError && (
-              <p className="text-xs text-amber-700" role="alert">
+              <p className="text-xs text-amber-700 dark:text-amber-300" role="alert">
                 {validationError}
               </p>
             )}
             {volumeTooLow && (
-              <p className="text-xs font-medium text-red-700" role="alert">
+              <p className="text-xs font-medium text-red-700 dark:text-red-300" role="alert">
                 Le volume total est inférieur à la distance des intervalles.
               </p>
             )}
             {generated && !volumeTooLow && (
-              <p className="text-xs text-slate-600">
+              <p className="altis-muted-text text-xs">
                 Distance des intervalles : {generated.intervalDistanceKm.toFixed(2)} km ·
                 échauffement/retour au calme : {generated.remainingKm.toFixed(2)} km
               </p>
             )}
 
             <button
-              className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="altis-primary-button w-full rounded-md px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!generated?.details || hasInvalidInput || volumeTooLow}
               onClick={() => {
                 if (generated?.details) {

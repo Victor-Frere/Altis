@@ -133,14 +133,14 @@ function PlanViewMode({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h3 className="text-lg font-semibold">Votre semaine</h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="altis-muted-text mt-1 text-sm">
             Consultez les séances et leur volume sans modifier le plan.
           </p>
         </div>
-        <label className="space-y-1 text-sm font-medium text-gray-700">
+        <label className="altis-muted-text space-y-1 text-sm font-medium">
           Sélectionner une semaine
           <select
-            className="block min-w-48 rounded-md border border-gray-300 bg-white px-3 py-2"
+            className="block min-w-48 rounded-md px-3 py-2"
             disabled={weeks.length === 0}
             onChange={(event) => {
               setSelectedWeekNumber(Number(event.target.value));
@@ -161,15 +161,15 @@ function PlanViewMode({
       {selectedWeek ? (
         <>
           <div className="grid gap-3 sm:grid-cols-2">
-            <article className="rounded-lg border border-blue-100 bg-blue-50 p-4">
-              <p className="text-sm text-blue-800">Volume total de la semaine</p>
-              <p className="mt-1 text-2xl font-semibold text-blue-950">
+            <article className="altis-card p-4">
+              <p className="altis-muted-text text-sm">Volume total de la semaine</p>
+              <p className="mt-1 text-2xl font-semibold text-altis-navy dark:text-altis-gold">
                 {weekVolume.toFixed(1)} <span className="text-base font-medium">km</span>
               </p>
             </article>
-            <article className="rounded-lg border border-violet-100 bg-violet-50 p-4">
-              <p className="text-sm text-violet-800">Volume maximal sur une journée</p>
-              <p className="mt-1 text-2xl font-semibold text-violet-950">
+            <article className="altis-card p-4">
+              <p className="altis-muted-text text-sm">Volume maximal sur une journée</p>
+              <p className="mt-1 text-2xl font-semibold text-altis-navy dark:text-altis-gold">
                 {maxSessionVolume.toFixed(1)}{" "}
                 <span className="text-base font-medium">km</span>
               </p>
@@ -184,8 +184,8 @@ function PlanViewMode({
                   aria-pressed={isSelected}
                   className={`min-w-0 rounded-lg border p-2 text-left transition sm:p-3 ${
                     isSelected
-                      ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
-                      : "border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50/50"
+                      ? "border-altis-gold bg-amber-50 ring-2 ring-altis-gold/30 dark:bg-slate-800"
+                      : "border border-slate-200 bg-white shadow-sm hover:border-altis-gold/60 hover:bg-amber-50 dark:border-slate-800 dark:bg-altis-card-dark dark:hover:bg-slate-800"
                   }`}
                   key={session.day}
                   onClick={() =>
@@ -196,7 +196,7 @@ function PlanViewMode({
                   <span className="block truncate text-xs font-semibold sm:text-sm">
                     {formatTrainingDayDate(selectedWeek.date, dayIndex)}
                   </span>
-                  <span className="mt-2 block truncate text-[10px] text-gray-600 sm:text-xs">
+                  <span className="altis-muted-text mt-2 block truncate text-[10px] sm:text-xs">
                     {session.type}
                   </span>
                   <span className="mt-1 block text-xs font-medium sm:text-sm">
@@ -210,7 +210,7 @@ function PlanViewMode({
           {selectedDay && (
             <article
               aria-live="polite"
-              className="rounded-lg border border-blue-200 bg-white p-4 shadow-sm"
+              className="altis-card p-4"
             >
               <h4 className="font-semibold">
                 Détails du {formatTrainingDayDate(selectedWeek.date, selectedDayIndex ?? 0)} —
@@ -218,18 +218,18 @@ function PlanViewMode({
               </h4>
               <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
                 <div>
-                  <dt className="text-gray-500">Type de séance</dt>
+                  <dt className="altis-muted-text">Type de séance</dt>
                   <dd className="font-medium">{selectedDay.type}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500">Volume</dt>
+                  <dt className="altis-muted-text">Volume</dt>
                   <dd className="font-medium">
                     {getSessionVolume(selectedDay).toFixed(1)} km
                   </dd>
                 </div>
                 {selectedDay.type === "Seuil" && (
                   <div>
-                    <dt className="text-gray-500">Temps au seuil</dt>
+                    <dt className="altis-muted-text">Temps au seuil</dt>
                     <dd className="font-medium">
                       {parseSeuilTime(selectedDay.type, selectedDay.details)} min
                     </dd>
@@ -237,7 +237,7 @@ function PlanViewMode({
                 )}
               </dl>
               {selectedDay.details && (
-                <p className="mt-3 whitespace-pre-wrap text-sm text-gray-700">
+                <p className="altis-muted-text mt-3 whitespace-pre-wrap text-sm">
                   {selectedDay.details}
                 </p>
               )}
@@ -245,7 +245,7 @@ function PlanViewMode({
           )}
         </>
       ) : (
-        <p className="rounded-lg border border-dashed border-gray-300 bg-white p-6 text-sm text-gray-600">
+        <p className="altis-card border-dashed p-6 text-sm text-slate-600 dark:text-slate-400">
           Aucune semaine n’est encore disponible dans ce plan.
         </p>
       )}
@@ -289,7 +289,7 @@ function PlanEditMode({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold">Tableau de bord</h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="altis-muted-text mt-1 text-sm">
             Modifiez les séances, puis enregistrez vos changements.
           </p>
         </div>
@@ -300,7 +300,7 @@ function PlanEditMode({
       <div className="space-y-3">
         <h3 className="text-lg font-semibold">Semaines du plan</h3>
         {weeks.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-gray-300 bg-white p-5 text-sm text-gray-600">
+          <p className="altis-card border-dashed p-5 text-sm text-slate-600 dark:text-slate-400">
             Ajoutez une semaine pour commencer à planifier les séances.
           </p>
         ) : (
@@ -309,19 +309,19 @@ function PlanEditMode({
             const panelId = `training-week-${week.weekNumber}`;
             return (
               <section
-                className="overflow-hidden rounded-lg border border-gray-200 bg-white"
+                className="altis-card overflow-hidden"
                 key={`${week.weekNumber}-${weekIndex}`}
               >
-                <div className="flex items-center gap-2 bg-gray-50 px-4 py-3">
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <span className="font-semibold">
+                <div className="flex flex-col gap-3 bg-slate-100 px-4 py-3 dark:bg-slate-800/70 sm:p-4 md:flex-row md:items-center">
+                  <div className="flex min-w-0 items-center justify-between gap-3 md:flex-1">
+                    <span className="min-w-0 truncate font-semibold">
                       {formatTrainingWeekRange(week.date)}
                     </span>
                     <button
                       aria-controls={panelId}
                       aria-expanded={isExpanded}
                       aria-label={`${isExpanded ? "Replier" : "Déplier"} la semaine ${week.weekNumber}`}
-                      className="flex cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-blue-50 hover:text-blue-600"
+                      className="altis-secondary-button flex shrink-0 cursor-pointer items-center justify-center rounded-xl p-2 shadow-sm transition-all hover:border-altis-gold hover:text-altis-navy dark:hover:text-altis-gold"
                       onClick={() => toggleWeek(week.weekNumber)}
                       type="button"
                     >
@@ -333,51 +333,164 @@ function PlanEditMode({
                         size={18}
                       />
                     </button>
-                    <span className="flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">
-                      <span>
-                        Volume total : {getWeekVolume(week).toFixed(1)} km
-                      </span>
-                      <span>
-                        Sortie la plus longue :{" "}
-                        {Math.max(0, ...week.sessions.map(getSessionVolume)).toFixed(1)} km
-                      </span>
+                  </div>
+                  <div className="altis-muted-text grid grid-cols-1 gap-1 text-xs sm:grid-cols-2 md:flex md:items-center md:gap-4 md:text-sm">
+                    <span>Volume total : {getWeekVolume(week).toFixed(1)} km</span>
+                    <span>
+                      Sortie max :{" "}
+                      {Math.max(0, ...week.sessions.map(getSessionVolume)).toFixed(1)} km
                     </span>
                   </div>
-                  <label className="flex items-center gap-2 text-xs text-gray-600">
-                    Lundi
-                    <input
-                      aria-label={`Date du lundi de la semaine ${week.weekNumber}`}
-                      className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm text-gray-900"
+                  <div className="flex items-center justify-between gap-3 md:justify-start">
+                    <label className="altis-muted-text flex items-center gap-2 text-xs">
+                      Lundi
+                      <input
+                        aria-label={`Date du lundi de la semaine ${week.weekNumber}`}
+                        className="rounded-md px-2 py-1.5 text-sm"
+                        disabled={isSaving}
+                        onChange={(event) => {
+                          if (!event.target.value) {
+                            return;
+                          }
+                          const date = normalizeWeekStartDate(event.target.value);
+                          onWeeksChange((current) =>
+                            current.map((item, index) =>
+                              index === weekIndex ? { ...item, date } : item,
+                            ),
+                          );
+                        }}
+                        type="date"
+                        value={week.date}
+                      />
+                    </label>
+                    <button
+                      className="rounded px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40 disabled:opacity-50"
                       disabled={isSaving}
-                      onChange={(event) => {
-                        if (!event.target.value) {
-                          return;
-                        }
-                        const date = normalizeWeekStartDate(event.target.value);
-                        onWeeksChange((current) =>
-                          current.map((item, index) =>
-                            index === weekIndex ? { ...item, date } : item,
-                          ),
-                        );
-                      }}
-                      type="date"
-                      value={week.date}
-                    />
-                  </label>
-                  <button
-                    className="rounded px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
-                    disabled={isSaving}
-                    onClick={() => onRemoveWeek(weekIndex)}
-                    type="button"
-                  >
-                    Supprimer
-                  </button>
+                      onClick={() => onRemoveWeek(weekIndex)}
+                      type="button"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
                 </div>
                 {isExpanded && (
-                  <div className="overflow-x-auto p-3" id={panelId}>
-                    <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+                  <div className="p-3" id={panelId}>
+                    <div className="space-y-3 md:hidden">
+                      {week.sessions.map((session, sessionIndex) => (
+                        <article
+                          className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-altis-card-dark"
+                          key={session.day}
+                        >
+                          <div className="flex flex-col gap-2">
+                            <h4 className="font-semibold">
+                              {formatTrainingDayDate(week.date, sessionIndex)}
+                            </h4>
+                            <label className="sr-only" htmlFor={`mobile-type-${week.weekNumber}-${sessionIndex}`}>
+                              {session.day}, type de séance
+                            </label>
+                            <select
+                              aria-label={`${session.day}, type de séance`}
+                              className="w-full rounded-md px-2 py-2 disabled:bg-slate-100 dark:disabled:bg-slate-800"
+                              disabled={isSaving}
+                              id={`mobile-type-${week.weekNumber}-${sessionIndex}`}
+                              onChange={(event) => {
+                                const type = event.target.value as TrainingType;
+                                onWeeksChange((current) =>
+                                  updateSession(
+                                    current,
+                                    weekIndex,
+                                    sessionIndex,
+                                    (item) => ({
+                                      ...item,
+                                      type,
+                                      distanceKm: type === "Off" ? 0 : item.distanceKm,
+                                    }),
+                                  ),
+                                );
+                              }}
+                              value={session.type}
+                            >
+                              {TRAINING_TYPES.map((type) => (
+                                <option key={type} value={type}>
+                                  {type}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="flex items-end gap-3">
+                            <label className="min-w-0 flex-1 space-y-1 text-sm font-medium">
+                              Volume (km)
+                              <input
+                                aria-label={`${session.day}, volume en kilomètres`}
+                                className="w-full rounded-md px-2 py-2 disabled:bg-slate-100 dark:disabled:bg-slate-800"
+                                disabled={isSaving || session.type === "Off"}
+                                max="300"
+                                min="0"
+                                onChange={(event) => {
+                                  const distanceKm = Number(event.target.value);
+                                  if (Number.isFinite(distanceKm) && distanceKm >= 0) {
+                                    onWeeksChange((current) =>
+                                      updateSession(
+                                        current,
+                                        weekIndex,
+                                        sessionIndex,
+                                        (item) => ({ ...item, distanceKm }),
+                                      ),
+                                    );
+                                  }
+                                }}
+                                step="0.1"
+                                type="number"
+                                value={session.type === "Off" ? 0 : session.distanceKm}
+                              />
+                            </label>
+                            {["VMA", "Seuil", "Côtes"].includes(session.type) && (
+                              <WorkoutAssistant
+                                day={session.day}
+                                initialVolumeKm={session.distanceKm}
+                                onApply={(details, distanceKm) => {
+                                  onWeeksChange((current) =>
+                                    updateSession(
+                                      current,
+                                      weekIndex,
+                                      sessionIndex,
+                                      (item) => ({ ...item, details, distanceKm }),
+                                    ),
+                                  );
+                                }}
+                              />
+                            )}
+                          </div>
+
+                          <label className="block space-y-1 text-sm font-medium">
+                            Détails
+                            <input
+                              aria-label={`${session.day}, détails`}
+                              className="w-full rounded-md px-2 py-2 disabled:bg-slate-100 dark:disabled:bg-slate-800"
+                              disabled={isSaving}
+                              maxLength={300}
+                              onChange={(event) => {
+                                const details = event.target.value;
+                                onWeeksChange((current) =>
+                                  updateSession(
+                                    current,
+                                    weekIndex,
+                                    sessionIndex,
+                                    (item) => ({ ...item, details }),
+                                  ),
+                                );
+                              }}
+                              placeholder="Allure, répétitions, sensations…"
+                              value={session.details}
+                            />
+                          </label>
+                        </article>
+                      ))}
+                    </div>
+                    <table className="hidden w-full min-w-[760px] border-collapse text-left text-sm md:table">
                       <thead>
-                        <tr className="border-b border-gray-200 text-xs uppercase text-gray-500">
+                        <tr className="border-b border-slate-200 text-xs uppercase text-slate-500 dark:border-slate-700 dark:text-slate-400">
                           <th className="px-2 py-3 font-medium" scope="col">
                             Jour
                           </th>
@@ -392,7 +505,7 @@ function PlanEditMode({
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100">
+                      <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
                         {week.sessions.map((session, sessionIndex) => (
                           <tr key={session.day}>
                             <th className="whitespace-nowrap px-2 py-2 font-medium" scope="row">
@@ -401,7 +514,7 @@ function PlanEditMode({
                             <td className="px-2 py-2">
                               <select
                                 aria-label={`${session.day}, type de séance`}
-                                className="w-full rounded-md border border-gray-300 px-2 py-2 disabled:bg-gray-100"
+                                className="w-full rounded-md px-2 py-2 disabled:bg-slate-100 dark:disabled:bg-slate-800"
                                 disabled={isSaving}
                                 onChange={(event) => {
                                   const type = event.target.value as TrainingType;
@@ -430,7 +543,7 @@ function PlanEditMode({
                             <td className="px-2 py-2">
                               <input
                                 aria-label={`${session.day}, volume en kilomètres`}
-                                className="w-28 rounded-md border border-gray-300 px-2 py-2 disabled:bg-gray-100"
+                                className="w-28 rounded-md px-2 py-2 disabled:bg-slate-100 dark:disabled:bg-slate-800"
                                 disabled={isSaving || session.type === "Off"}
                                 max="300"
                                 min="0"
@@ -456,7 +569,7 @@ function PlanEditMode({
                               <div className="flex min-w-[18rem] items-center gap-2">
                                 <input
                                   aria-label={`${session.day}, détails`}
-                                  className="min-w-0 flex-1 rounded-md border border-gray-300 px-2 py-2 disabled:bg-gray-100"
+                                  className="min-w-0 flex-1 rounded-md px-2 py-2 disabled:bg-slate-100 dark:disabled:bg-slate-800"
                                   disabled={isSaving}
                                   maxLength={300}
                                   onChange={(event) => {
@@ -502,7 +615,7 @@ function PlanEditMode({
           })
         )}
         <button
-          className="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 py-4 font-bold text-slate-500 transition-all hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 py-4 font-bold text-slate-600 transition-all hover:border-altis-gold hover:bg-amber-50 hover:text-altis-navy dark:border-slate-600 dark:bg-slate-900/30 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-altis-gold disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isSaving}
           onClick={onAddWeek}
           type="button"
@@ -512,14 +625,14 @@ function PlanEditMode({
         </button>
       </div>
       {modifiedWeeks.length > 0 && (
-        <div className="animate-slide-up fixed bottom-0 left-0 z-50 flex w-full items-center justify-between gap-4 border-t border-slate-200 bg-white/90 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] backdrop-blur-md md:px-8">
-          <p aria-live="polite" className="min-w-0 text-sm font-medium text-slate-700" role="status">
+        <div className="animate-slide-up fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-0 z-40 flex w-full items-center justify-between gap-4 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.08)] backdrop-blur-md dark:border-slate-700/50 dark:bg-altis-card-dark/95 dark:shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.35)] md:bottom-0 md:z-50 md:px-8">
+          <p aria-live="polite" className="min-w-0 text-sm font-medium text-slate-800 dark:text-altis-marble" role="status">
             {formatModifiedWeekSummary(modifiedWeeks)}
           </p>
           <div className="flex shrink-0 items-center gap-2">
             <button
               aria-label="Annuler les modifications"
-              className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-200 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
+              className="altis-secondary-button flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isSaving}
               onClick={onCancel}
               type="button"
@@ -528,7 +641,7 @@ function PlanEditMode({
               Annuler
             </button>
             <button
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="altis-primary-button rounded-md px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isSaving}
               onClick={onSave}
               type="button"
@@ -624,7 +737,7 @@ export function TrainingPlan({
 
   if (plan.isLoading) {
     return (
-      <p aria-live="polite" className="rounded-lg bg-white p-6 text-sm text-gray-600">
+      <p aria-live="polite" className="altis-card p-6 text-sm text-slate-600 dark:text-slate-400">
         Chargement du plan d’entraînement…
       </p>
     );
@@ -637,7 +750,7 @@ export function TrainingPlan({
       {plan.error && (
         <p
           aria-live="polite"
-          className="rounded-md bg-red-50 p-3 text-sm text-red-800"
+          className="altis-error-panel text-sm"
           role="alert"
         >
           {plan.error}
@@ -645,25 +758,25 @@ export function TrainingPlan({
       )}
 
       {!isAthleteOwner && !plan.isEditable && (
-        <p className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+        <p className="altis-warning-panel text-sm">
           Lecture seule : l’athlète n’a pas accordé le droit de modifier ce plan.
         </p>
       )}
 
       <section
         aria-label={athleteName ? `Plan de ${athleteName}` : "Mon plan"}
-        className="space-y-5 rounded-xl border border-gray-200 bg-white p-4 sm:p-6"
+        className="altis-card space-y-5 p-4 sm:p-6"
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-sm font-medium text-blue-700">
+            <div className="flex items-center gap-2 text-sm font-medium text-altis-navy dark:text-altis-gold">
               <CalendarDays aria-hidden="true" size={17} />
               Planification hebdomadaire
             </div>
-            <h2 className="mt-2 text-2xl font-bold text-gray-950">
+            <h2 className="mt-2 text-2xl font-bold text-slate-900 dark:text-altis-marble">
               {athleteName ? `Plan de ${athleteName}` : "Mon plan"}
             </h2>
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="altis-muted-text mt-1 text-sm">
               {draftWeeks.length} semaine(s) · {getTotalVolume(draftWeeks).toFixed(1)} km
               au total · maximum {maxWeeklyVolume.toFixed(1)} km/semaine
             </p>
@@ -671,15 +784,15 @@ export function TrainingPlan({
 
           <div
             aria-label="Mode du plan"
-            className="inline-flex rounded-lg bg-gray-100 p-1"
+            className="inline-flex rounded-lg bg-slate-100 p-1 dark:bg-slate-900/60"
             role="tablist"
           >
             <button
               aria-selected={mode === "view"}
               className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
                 mode === "view"
-                  ? "bg-white text-blue-700 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "altis-selected font-bold shadow-sm"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-altis-marble"
               }`}
               onClick={() => setMode("view")}
               role="tab"
@@ -693,10 +806,10 @@ export function TrainingPlan({
               aria-selected={mode === "edit"}
               className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium disabled:cursor-not-allowed ${
                 !canEnterEdit
-                  ? "cursor-not-allowed text-gray-400"
+                  ? "cursor-not-allowed text-slate-400 dark:text-slate-500"
                   : mode === "edit"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
+                    ? "altis-selected font-bold shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-altis-marble"
               }`}
               onClick={() => {
                 if (canEnterEdit) {
@@ -722,14 +835,14 @@ export function TrainingPlan({
         </div>
 
         {!isAthleteOwner && canEnterEdit && (
-          <p className="inline-flex items-center gap-2 rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
+          <p className="altis-success-panel inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm">
             <LockOpen aria-hidden="true" size={15} />
             L’athlète a autorisé la modification de ce plan.
           </p>
         )}
 
         {successMessage && (
-          <p aria-live="polite" className="text-sm text-green-700" role="status">
+          <p aria-live="polite" className="altis-success-text text-sm" role="status">
             {successMessage}
           </p>
         )}
