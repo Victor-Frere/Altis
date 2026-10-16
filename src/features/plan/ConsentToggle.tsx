@@ -21,22 +21,36 @@ type ConsentToggleProps =
       children: ReactNode;
     };
 
-function isTrainerConsent(value: unknown): value is TrainerConsent {
+function normalizeTrainerConsent(value: unknown): TrainerConsent | null {
   if (typeof value !== "object" || value === null) {
-    return false;
+    return null;
   }
 
-  const trainer = "trainer" in value ? value.trainer : null;
-  return (
+  if (
     "trainer_id" in value &&
     typeof value.trainer_id === "string" &&
     "edit_consent" in value &&
     typeof value.edit_consent === "boolean" &&
-    typeof trainer === "object" &&
-    trainer !== null &&
-    "username" in trainer &&
-    typeof trainer.username === "string"
-  );
+    "trainer" in value
+  ) {
+    const relation = value.trainer;
+    const trainer = Array.isArray(relation) ? relation[0] ?? null : relation;
+
+    if (
+      trainer === null ||
+      (typeof trainer === "object" &&
+        "username" in trainer &&
+        typeof trainer.username === "string")
+    ) {
+      return {
+        trainer_id: value.trainer_id,
+        edit_consent: value.edit_consent,
+        trainer,
+      };
+    }
+  }
+
+  return null;
 }
 
 function AthleteConsentControls({
@@ -68,11 +82,19 @@ function AthleteConsentControls({
         if (loadError) {
           throw loadError;
         }
-        if (!Array.isArray(data) || !data.every(isTrainerConsent)) {
+        if (!Array.isArray(data)) {
           throw new Error("Les relations entraîneur-athlète reçues sont invalides.");
         }
+        const normalizedTrainers: TrainerConsent[] = [];
+        for (const value of data) {
+          const trainer = normalizeTrainerConsent(value);
+          if (!trainer) {
+            throw new Error("Les relations entraîneur-athlète reçues sont invalides.");
+          }
+          normalizedTrainers.push(trainer);
+        }
         if (isMounted) {
-          setTrainers(data);
+          setTrainers(normalizedTrainers);
         }
       } catch (loadError) {
         if (isMounted) {
@@ -187,7 +209,7 @@ function AthleteConsentControls({
           >
             <div>
               <p className="text-sm">
-                L’entraîneur @{trainer.trainer.username} souhaite accéder à votre plan.
+                L’entraîneur @{trainer.trainer?.username ?? "inconnu"} souhaite accéder à votre plan.
               </p>
               <label className="mt-2 inline-flex items-center gap-2 text-sm">
                 <input
